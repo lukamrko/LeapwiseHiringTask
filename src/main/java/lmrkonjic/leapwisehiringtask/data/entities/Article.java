@@ -18,13 +18,11 @@ public class Article {
     @JoinColumn(name="mainNewsID", nullable = false)
     private MainNews mainNews;
 
-    @ManyToOne
-    @JoinColumn(name = "rssID", nullable = false)
-    private RSSSite rssSite;
-
     private String articleTitle;
 
     private  String articleURL;
+
+    private String rssSite;
 
     public Article() {  }
 
@@ -33,12 +31,12 @@ public class Article {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Article article = (Article) o;
-        return Objects.equals(articleID, article.articleID) && Objects.equals(mainNews, article.mainNews) && Objects.equals(rssSite, article.rssSite) && Objects.equals(articleTitle, article.articleTitle) && Objects.equals(articleURL, article.articleURL);
+        return Objects.equals(articleID, article.articleID) && Objects.equals(mainNews, article.mainNews) && Objects.equals(articleTitle, article.articleTitle) && Objects.equals(articleURL, article.articleURL) && Objects.equals(rssSite, article.rssSite);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(articleID, mainNews, rssSite, articleTitle, articleURL);
+        return Objects.hash(articleID, mainNews, articleTitle, articleURL, rssSite);
     }
 
     @Override
@@ -46,9 +44,9 @@ public class Article {
         return "Article{" +
                 "articleID=" + articleID +
                 ", mainNews=" + mainNews +
-                ", rssSite=" + rssSite +
                 ", articleTitle='" + articleTitle + '\'' +
                 ", articleURL='" + articleURL + '\'' +
+                ", rssSite='" + rssSite + '\'' +
                 '}';
     }
 }

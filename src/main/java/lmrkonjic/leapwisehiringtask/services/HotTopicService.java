@@ -2,12 +2,10 @@ package lmrkonjic.leapwisehiringtask.services;
 
 import lmrkonjic.leapwisehiringtask.data.entities.Article;
 import lmrkonjic.leapwisehiringtask.data.entities.MainNews;
-import lmrkonjic.leapwisehiringtask.data.entities.RSSSite;
 import lmrkonjic.leapwisehiringtask.dtos.AnalysisResultDTO;
 import lmrkonjic.leapwisehiringtask.dtos.ArticleDTO;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.List;
 
@@ -23,8 +21,7 @@ public class HotTopicService {
 
     private static List<MainNews> mockMainNews() {
         // Mock RSS site
-        RSSSite rssSite = new RSSSite();
-        rssSite.setRssURL("https://example.com/rss");
+        String rssSite = "https://news.google.com/news?cf=all&hl=en&pz=1&ned=us&output=rss";
 
 // Create MainNews 1 with 3 articles
         MainNews mainNews1 = new MainNews();
