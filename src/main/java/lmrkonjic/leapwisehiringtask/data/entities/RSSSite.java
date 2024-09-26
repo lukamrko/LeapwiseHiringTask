@@ -1,12 +1,10 @@
 package lmrkonjic.leapwisehiringtask.data.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Objects;
 
 @Setter
@@ -19,6 +17,9 @@ public class RSSSite {
 
     private String rssURL;
 
+    @OneToMany(mappedBy = "rssSite", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Article> articles;
+
     public RSSSite() {
     }
 
@@ -27,12 +28,12 @@ public class RSSSite {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         RSSSite rssSite = (RSSSite) o;
-        return Objects.equals(rssID, rssSite.rssID) && Objects.equals(rssURL, rssSite.rssURL);
+        return Objects.equals(rssID, rssSite.rssID) && Objects.equals(rssURL, rssSite.rssURL) && Objects.equals(articles, rssSite.articles);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(rssID, rssURL);
+        return Objects.hash(rssID, rssURL, articles);
     }
 
     @Override
@@ -40,6 +41,7 @@ public class RSSSite {
         return "RSSSite{" +
                 "rssID=" + rssID +
                 ", rssURL='" + rssURL + '\'' +
+                ", articles=" + articles +
                 '}';
     }
 }
