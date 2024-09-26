@@ -3,8 +3,11 @@ package lmrkonjic.leapwisehiringtask.services;
 import lmrkonjic.leapwisehiringtask.data.entities.MainNews;
 import lmrkonjic.leapwisehiringtask.dtos.AnalysisRequestDTO;
 import lmrkonjic.leapwisehiringtask.dtos.AnalysisResultDTO;
+import lmrkonjic.leapwisehiringtask.dtos.ArticleDTO;
 import lmrkonjic.leapwisehiringtask.dtos.MainNewsDTO;
 import org.springframework.stereotype.Service;
+
+import java.util.Dictionary;
 import java.util.List;
 
 @Service
