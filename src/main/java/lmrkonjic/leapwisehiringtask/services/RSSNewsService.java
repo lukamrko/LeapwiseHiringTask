@@ -3,11 +3,9 @@ package lmrkonjic.leapwisehiringtask.services;
 import lmrkonjic.leapwisehiringtask.data.entities.MainNews;
 import lmrkonjic.leapwisehiringtask.dtos.AnalysisRequestDTO;
 import lmrkonjic.leapwisehiringtask.dtos.AnalysisResultDTO;
-import lmrkonjic.leapwisehiringtask.dtos.ArticleDTO;
 import lmrkonjic.leapwisehiringtask.dtos.MainNewsDTO;
 import org.springframework.stereotype.Service;
 
-import java.util.Dictionary;
 import java.util.List;
 
 @Service
@@ -39,11 +37,11 @@ public class RSSNewsService {
     //TODO actual implementation
     public List<MainNewsDTO> fetchMostTrendingNewsForSessionID(Long sessionID) {
         List<MainNews> mostTrendingNews = databaseService.fetchMostTrendingNewsWithArticlesForSessionID(sessionID);
-        return transfromMainNewsToMainNewsDTO(mostTrendingNews);
+        return transformMainNewsToMainNewsDTO(mostTrendingNews);
     }
 
     //TODO actual implementation
-    private List<MainNewsDTO> transfromMainNewsToMainNewsDTO(List<MainNews> mostTrendingNews) {
+    private List<MainNewsDTO> transformMainNewsToMainNewsDTO(List<MainNews> mostTrendingNews) {
 
         return null;
     }
