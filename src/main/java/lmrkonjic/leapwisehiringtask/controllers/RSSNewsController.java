@@ -1,6 +1,7 @@
 package lmrkonjic.leapwisehiringtask.controllers;
 
 import lmrkonjic.leapwisehiringtask.data.entities.MainNews;
+import lmrkonjic.leapwisehiringtask.dtos.AnalysisRequestDTO;
 import lmrkonjic.leapwisehiringtask.dtos.AnalysisResultDTO;
 import lmrkonjic.leapwisehiringtask.services.RSSNewsService;
 import org.springframework.http.ResponseEntity;
@@ -19,10 +20,11 @@ public class RSSNewsController {
     }
 
     @PostMapping("/analyse/new")
-    public ResponseEntity<AnalysisResultDTO> analyzeRSSNews(@RequestParam String queryURL) {
-        AnalysisResultDTO analysisResultDTO = rssNewsService.analyzeRSSNews(queryURL);
+    public ResponseEntity<AnalysisResultDTO> analyzeRSSNews(@RequestBody AnalysisRequestDTO requestDTO) {
+        AnalysisResultDTO analysisResultDTO = rssNewsService.analyzeRSSNews(requestDTO);
         return ResponseEntity.ok(analysisResultDTO);
     }
+
 
     @GetMapping("/frequency/{id}")
     public ResponseEntity<List<MainNews>> fetchMostTrendingNews(@PathVariable Long id) {

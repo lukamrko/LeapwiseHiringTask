@@ -1,6 +1,7 @@
 package lmrkonjic.leapwisehiringtask.services;
 
 import lmrkonjic.leapwisehiringtask.data.entities.MainNews;
+import lmrkonjic.leapwisehiringtask.dtos.AnalysisRequestDTO;
 import lmrkonjic.leapwisehiringtask.dtos.AnalysisResultDTO;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +25,7 @@ public class RSSNewsService {
         this.rssDataService = rssDataService;
     }
 
-    public AnalysisResultDTO analyzeRSSNews(String queryURL) {
+    public AnalysisResultDTO analyzeRSSNews(AnalysisRequestDTO requestDTO) {
         AnalysisResultDTO analysisResultDTO = new AnalysisResultDTO();
         return  analysisResultDTO;
 
