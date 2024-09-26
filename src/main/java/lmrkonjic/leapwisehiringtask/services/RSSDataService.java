@@ -10,6 +10,7 @@ import java.util.List;
 @Service
 public class RSSDataService {
 
+    //TODO actual implementation
     public Dictionary<String, List<ArticleDTO>> fetchRSSArticlesForURLs(List<String> urls){
         Dictionary<String, List<ArticleDTO>> articlesForNewsSites = new Hashtable<String, List<ArticleDTO>>();
 

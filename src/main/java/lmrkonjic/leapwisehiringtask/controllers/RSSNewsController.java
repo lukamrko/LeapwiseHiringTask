@@ -3,6 +3,7 @@ package lmrkonjic.leapwisehiringtask.controllers;
 import lmrkonjic.leapwisehiringtask.data.entities.MainNews;
 import lmrkonjic.leapwisehiringtask.dtos.AnalysisRequestDTO;
 import lmrkonjic.leapwisehiringtask.dtos.AnalysisResultDTO;
+import lmrkonjic.leapwisehiringtask.dtos.MainNewsDTO;
 import lmrkonjic.leapwisehiringtask.services.RSSNewsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,8 +28,8 @@ public class RSSNewsController {
 
 
     @GetMapping("/frequency/{id}")
-    public ResponseEntity<List<MainNews>> fetchMostTrendingNews(@PathVariable Long id) {
-        List<MainNews> trendingNews = rssNewsService.fetchMostTrendingNewsForSessionID(id);
+    public ResponseEntity<List<MainNewsDTO>> fetchMostTrendingNews(@PathVariable Long id) {
+        List<MainNewsDTO> trendingNews = rssNewsService.fetchMostTrendingNewsForSessionID(id);
         return ResponseEntity.ok(trendingNews);
     }
 }

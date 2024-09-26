@@ -1,5 +1,6 @@
 package lmrkonjic.leapwisehiringtask.services;
 
+import lmrkonjic.leapwisehiringtask.data.entities.MainNews;
 import lmrkonjic.leapwisehiringtask.data.entities.Session;
 import lmrkonjic.leapwisehiringtask.data.repositories.ArticleRepository;
 import lmrkonjic.leapwisehiringtask.data.repositories.MainNewsRepository;
@@ -9,6 +10,7 @@ import lmrkonjic.leapwisehiringtask.dtos.SessionDTO;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class DatabaseService {
@@ -28,12 +30,14 @@ public class DatabaseService {
         this.rssSiteRepository = rssSiteRepository;
     }
 
-    public void saveSessionData(SessionDTO sessionDTO) {
+    //TODO actual implementation
+    public void saveSessionWithData(List<MainNews> analyzedData) {
         Session session = new Session();
-        session.setSessionDateTime(LocalDateTime.now());
-        sessionRepository.save(session);
+    }
 
-        // Placeholder return for session ID (unique identifier)
-        long number = session.getSessionID();
+    //TODO actual implementation
+    public List<MainNews> fetchMostTrendingNewsWithArticlesForSessionID(Long sessionID) {
+
+        return null;
     }
 }

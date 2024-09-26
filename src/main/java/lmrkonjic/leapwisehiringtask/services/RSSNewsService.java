@@ -3,37 +3,45 @@ package lmrkonjic.leapwisehiringtask.services;
 import lmrkonjic.leapwisehiringtask.data.entities.MainNews;
 import lmrkonjic.leapwisehiringtask.dtos.AnalysisRequestDTO;
 import lmrkonjic.leapwisehiringtask.dtos.AnalysisResultDTO;
+import lmrkonjic.leapwisehiringtask.dtos.MainNewsDTO;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class RSSNewsService {
-
-
     private final DatabaseService databaseService;
-    private final HotTopicSearchService hotTopicSearchService;
+    private final HotTopicService hotTopicService;
     private final RSSDataService rssDataService;
 
     public RSSNewsService(
             DatabaseService databaseService,
-            HotTopicSearchService hotTopicSearchService,
+            HotTopicService hotTopicService,
             RSSDataService rssDataService) {
         this.databaseService = databaseService;
-        this.hotTopicSearchService = hotTopicSearchService;
+        this.hotTopicService = hotTopicService;
         this.rssDataService = rssDataService;
     }
 
+    //TODO actual implementation
     public AnalysisResultDTO analyzeRSSNews(AnalysisRequestDTO requestDTO) {
-        AnalysisResultDTO analysisResultDTO = new AnalysisResultDTO();
-        return  analysisResultDTO;
+        List<String> rssUrls = requestDTO.getRssUrls();
+        var rssArticlesForURLs = rssDataService.fetchRSSArticlesForURLs(rssUrls);
+        var analyzedData = hotTopicService.getMainNewsWithArticles(rssArticlesForURLs);
 
+        databaseService.saveSessionWithData(analyzedData);
+
+        return hotTopicService.getHotTopicsForAnalyzedData(analyzedData);
     }
 
-    public List<MainNews> fetchMostTrendingNewsForSessionID(Long sessionID) {
-        // Logic to fetch and return top three trending news based on the sessionID
+    //TODO actual implementation
+    public List<MainNewsDTO> fetchMostTrendingNewsForSessionID(Long sessionID) {
+        List<MainNews> mostTrendingNews = databaseService.fetchMostTrendingNewsWithArticlesForSessionID(sessionID);
+        return transfromMainNewsToMainNewsDTO(mostTrendingNews);
+    }
 
-        return new ArrayList<>(); // Replace with actual implementation
+    //TODO actual implementation
+    private List<MainNewsDTO> transfromMainNewsToMainNewsDTO(List<MainNews> mostTrendingNews) {
+
+        return null;
     }
 }
