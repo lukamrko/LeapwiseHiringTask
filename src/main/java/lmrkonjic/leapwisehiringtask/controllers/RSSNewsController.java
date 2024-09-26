@@ -1,6 +1,7 @@
 package lmrkonjic.leapwisehiringtask.controllers;
 
 import lmrkonjic.leapwisehiringtask.data.entities.MainNews;
+import lmrkonjic.leapwisehiringtask.dtos.AnalysisResultDTO;
 import lmrkonjic.leapwisehiringtask.services.RSSNewsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +17,9 @@ public class RSSNewsController {
     private RSSNewsService rssNewsService;
 
     @PostMapping("/analyse/new")
-    public ResponseEntity<Long> analyzeRSSNews(@RequestParam String queryURL) {
-        Long sessionID = rssNewsService.analyzeRSSNews(queryURL);
-        return ResponseEntity.ok(sessionID);
+    public ResponseEntity<AnalysisResultDTO> analyzeRSSNews(@RequestParam String queryURL) {
+        AnalysisResultDTO analysisResultDTO = rssNewsService.analyzeRSSNews(queryURL);
+        return ResponseEntity.ok(analysisResultDTO);
     }
 
     @GetMapping("/frequency/{id}")
