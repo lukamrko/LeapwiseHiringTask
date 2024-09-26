@@ -1,3 +1,5 @@
+package lmrkonjic.leapwisehiringtask.controllers;
+
 import lmrkonjic.leapwisehiringtask.data.entities.MainNews;
 import lmrkonjic.leapwisehiringtask.services.RSSNewsService;
 import org.springframework.beans.factory.annotation.Autowired;
