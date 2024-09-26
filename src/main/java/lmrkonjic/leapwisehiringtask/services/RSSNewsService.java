@@ -16,17 +16,20 @@ import java.util.List;
 @Service
 public class RSSNewsService {
 
-    @Autowired
-    private SessionRepository sessionRepository;
+    private final SessionRepository sessionRepository;
 
-    @Autowired
-    private MainNewsRepository mainNewsRepository;
+    private final MainNewsRepository mainNewsRepository;
 
-    @Autowired
-    private ArticleRepository articleRepository;
+    private final ArticleRepository articleRepository;
 
-    @Autowired
-    private RSSSiteRepository rssSiteRepository;
+    private final RSSSiteRepository rssSiteRepository;
+
+    public RSSNewsService(SessionRepository sessionRepository, MainNewsRepository mainNewsRepository, ArticleRepository articleRepository, RSSSiteRepository rssSiteRepository) {
+        this.sessionRepository = sessionRepository;
+        this.mainNewsRepository = mainNewsRepository;
+        this.articleRepository = articleRepository;
+        this.rssSiteRepository = rssSiteRepository;
+    }
 
     public Long analyzeRSSNews(String queryURL) {
         // Logic to fetch, analyze RSS feeds, and store data
