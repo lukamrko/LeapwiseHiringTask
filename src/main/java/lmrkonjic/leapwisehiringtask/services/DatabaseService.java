@@ -6,9 +6,11 @@ import lmrkonjic.leapwisehiringtask.data.repositories.MainNewsRepository;
 import lmrkonjic.leapwisehiringtask.data.repositories.RSSSiteRepository;
 import lmrkonjic.leapwisehiringtask.data.repositories.SessionRepository;
 import lmrkonjic.leapwisehiringtask.dtos.SessionDTO;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+@Service
 public class DatabaseService {
 
     private final SessionRepository sessionRepository;
