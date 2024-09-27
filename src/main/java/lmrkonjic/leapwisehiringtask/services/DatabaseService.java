@@ -1,21 +1,25 @@
 package lmrkonjic.leapwisehiringtask.services;
 
-import lmrkonjic.leapwisehiringtask.data.entities.Article;
 import lmrkonjic.leapwisehiringtask.data.entities.MainNews;
 import lmrkonjic.leapwisehiringtask.data.entities.Session;
 import lmrkonjic.leapwisehiringtask.data.repositories.ArticleRepository;
 import lmrkonjic.leapwisehiringtask.data.repositories.MainNewsRepository;
 import lmrkonjic.leapwisehiringtask.data.repositories.SessionRepository;
-import org.springframework.cglib.core.Local;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DatabaseService {
+
+    @Value("${news.top-count}")
+    private int topCount;
 
     private final SessionRepository sessionRepository;
 
@@ -45,9 +49,9 @@ public class DatabaseService {
         mainNewsRepository.saveAll(analyzedData);
     }
 
-    //TODO actual implementation
+    @Transactional(readOnly = true)
     public List<MainNews> fetchMostTrendingNewsWithArticlesForSessionID(Long sessionID) {
-
-        return null;
+        Pageable pageable = PageRequest.of(0, topCount); // Get the first 3 results
+        return mainNewsRepository.findTopMainNewsForSessionID(sessionID, pageable);
     }
 }
