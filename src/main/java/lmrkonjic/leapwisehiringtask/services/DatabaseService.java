@@ -1,12 +1,17 @@
 package lmrkonjic.leapwisehiringtask.services;
 
+import lmrkonjic.leapwisehiringtask.data.entities.Article;
 import lmrkonjic.leapwisehiringtask.data.entities.MainNews;
 import lmrkonjic.leapwisehiringtask.data.entities.Session;
 import lmrkonjic.leapwisehiringtask.data.repositories.ArticleRepository;
 import lmrkonjic.leapwisehiringtask.data.repositories.MainNewsRepository;
 import lmrkonjic.leapwisehiringtask.data.repositories.SessionRepository;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -25,9 +30,19 @@ public class DatabaseService {
         this.articleRepository = articleRepository;
     }
 
-    //TODO actual implementation
+    @Transactional
     public void saveSessionWithData(List<MainNews> analyzedData) {
         Session session = new Session();
+        session.setSessionDateTime(LocalDateTime.now());
+
+        //Saving session separately for the performance reasons
+        sessionRepository.save(session);
+
+        for (MainNews mainNews : analyzedData) {
+            mainNews.setSession(session);
+        }
+
+        mainNewsRepository.saveAll(analyzedData);
     }
 
     //TODO actual implementation
