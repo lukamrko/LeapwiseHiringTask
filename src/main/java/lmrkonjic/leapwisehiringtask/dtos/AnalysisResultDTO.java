@@ -7,5 +7,5 @@ import java.util.List;
 @Data
 public class AnalysisResultDTO {
     private Long sessionID;
-    private List<HotTopicDTO> hotTopics;
+    private List<MainNewsDTO> hotTopics;
 }

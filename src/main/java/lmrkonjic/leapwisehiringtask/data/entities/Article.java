@@ -22,7 +22,7 @@ public class Article {
 
     private  String articleURL;
 
-    private String rssSite;
+    private String rssSiteURL;
 
     public Article() {  }
 
@@ -31,12 +31,12 @@ public class Article {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Article article = (Article) o;
-        return Objects.equals(articleID, article.articleID) && Objects.equals(mainNews, article.mainNews) && Objects.equals(articleTitle, article.articleTitle) && Objects.equals(articleURL, article.articleURL) && Objects.equals(rssSite, article.rssSite);
+        return Objects.equals(articleID, article.articleID) && Objects.equals(mainNews, article.mainNews) && Objects.equals(articleTitle, article.articleTitle) && Objects.equals(articleURL, article.articleURL) && Objects.equals(rssSiteURL, article.rssSiteURL);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(articleID, mainNews, articleTitle, articleURL, rssSite);
+        return Objects.hash(articleID, mainNews, articleTitle, articleURL, rssSiteURL);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class Article {
                 ", mainNews=" + mainNews +
                 ", articleTitle='" + articleTitle + '\'' +
                 ", articleURL='" + articleURL + '\'' +
-                ", rssSite='" + rssSite + '\'' +
+                ", rssSiteURL='" + rssSiteURL + '\'' +
                 '}';
     }
 }

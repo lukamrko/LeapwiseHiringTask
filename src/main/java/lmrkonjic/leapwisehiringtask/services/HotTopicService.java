@@ -2,10 +2,10 @@ package lmrkonjic.leapwisehiringtask.services;
 
 import lmrkonjic.leapwisehiringtask.data.entities.Article;
 import lmrkonjic.leapwisehiringtask.data.entities.MainNews;
-import lmrkonjic.leapwisehiringtask.dtos.AnalysisResultDTO;
 import lmrkonjic.leapwisehiringtask.dtos.ArticleDTO;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.List;
 
@@ -31,19 +31,19 @@ public class HotTopicService {
         article1.setArticleTitle("Article 1-1");
         article1.setArticleURL("https://example.com/article1-1");
         article1.setMainNews(mainNews1);
-        article1.setRssSite(rssSite);
+        article1.setRssSiteURL(rssSite);
 
         Article article2 = new Article();
         article2.setArticleTitle("Article 1-2");
         article2.setArticleURL("https://example.com/article1-2");
         article2.setMainNews(mainNews1);
-        article2.setRssSite(rssSite);
+        article2.setRssSiteURL(rssSite);
 
         Article article3 = new Article();
         article3.setArticleTitle("Article 1-3");
         article3.setArticleURL("https://example.com/article1-3");
         article3.setMainNews(mainNews1);
-        article3.setRssSite(rssSite);
+        article3.setRssSiteURL(rssSite);
 
         mainNews1.setArticles(List.of(article1, article2, article3));
 
@@ -55,13 +55,13 @@ public class HotTopicService {
         article4.setArticleTitle("Article 2-1");
         article4.setArticleURL("https://example.com/article2-1");
         article4.setMainNews(mainNews2);
-        article4.setRssSite(rssSite);
+        article4.setRssSiteURL(rssSite);
 
         Article article5 = new Article();
         article5.setArticleTitle("Article 2-2");
         article5.setArticleURL("https://example.com/article2-2");
         article5.setMainNews(mainNews2);
-        article5.setRssSite(rssSite);
+        article5.setRssSiteURL(rssSite);
 
         mainNews2.setArticles(List.of(article4, article5));
 
@@ -73,13 +73,13 @@ public class HotTopicService {
         article6.setArticleTitle("Article 3-1");
         article6.setArticleURL("https://example.com/article3-1");
         article6.setMainNews(mainNews3);
-        article6.setRssSite(rssSite);
+        article6.setRssSiteURL(rssSite);
 
         Article article7 = new Article();
         article7.setArticleTitle("Article 3-2");
         article7.setArticleURL("https://example.com/article3-2");
         article7.setMainNews(mainNews3);
-        article7.setRssSite(rssSite);
+        article7.setRssSiteURL(rssSite);
 
         mainNews3.setArticles(List.of(article6, article7));
 
@@ -91,7 +91,7 @@ public class HotTopicService {
         article8.setArticleTitle("Article 4-1");
         article8.setArticleURL("https://example.com/article4-1");
         article8.setMainNews(mainNews4);
-        article8.setRssSite(rssSite);
+        article8.setRssSiteURL(rssSite);
 
         mainNews4.setArticles(List.of(article8));
 
@@ -100,10 +100,16 @@ public class HotTopicService {
         return mockMainNewsList;
     }
 
-    //TODO actual implementation
-    public AnalysisResultDTO getHotTopicsForAnalyzedData(List<MainNews> analyzedData) {
-        AnalysisResultDTO analysisResultDTO = new AnalysisResultDTO();
+    //TODO maybe add option for overlap on all news sites
+    public List<MainNews> getHotMainNews(List<MainNews> analyzedData) {
 
-        return analysisResultDTO;
+        List<MainNews> hotMainNews = new ArrayList<>();
+        for(MainNews mainNews : analyzedData){
+            if(mainNews.getArticles().size()>=2)
+            {
+                hotMainNews.add(mainNews);
+            }
+        }
+        return hotMainNews;
     }
 }
