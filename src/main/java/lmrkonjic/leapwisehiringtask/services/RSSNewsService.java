@@ -38,7 +38,6 @@ public class RSSNewsService {
         return transformHotMainNewsToAnalysisResultDTO(hotMainNews);
     }
 
-    //TODO actual implementation
     public List<MainNewsDTO> fetchMostTrendingNewsForSessionID(Long sessionID) {
         List<MainNews> mostTrendingNews = databaseService.fetchMostTrendingNewsWithArticlesForSessionID(sessionID);
         return transformMainNewsToMainNewsDTO(mostTrendingNews);
