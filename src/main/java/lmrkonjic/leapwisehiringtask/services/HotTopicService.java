@@ -25,7 +25,6 @@ public class HotTopicService {
     private static final float SIMILARITY_THRESHOLD = 2f;
     private static long tempIdCounter = 1;  // Temporary ID counter
 
-
     public List<MainNews> getMainNewsWithArticles(List<ArticleDTO> rssArticles) throws Exception {
         for(var rssArticle : rssArticles) {
             rssArticle.setArticleID(tempIdCounter++);
@@ -58,7 +57,7 @@ public class HotTopicService {
                 var activeArticle = rssArticles.getFirst();
                 usedIDs.add(activeArticle.getArticleID().toString());
 
-                var activeMainNews = createMainNewsFromArticle(activeArticle);
+                var activeMainNews = createMainNewsFromArticleWithoutArticles(activeArticle);
 
                 QueryParser parser = new QueryParser("title", analyzer);
 
@@ -127,11 +126,10 @@ public class HotTopicService {
     }
 
 
-    private MainNews createMainNewsFromArticle(ArticleDTO articleDTO) {
+    private MainNews createMainNewsFromArticleWithoutArticles(ArticleDTO articleDTO) {
         MainNews mainNews = new MainNews();
         mainNews.setMainNewsTitle(articleDTO.getArticleTitle());
         mainNews.setArticles(new ArrayList<>());
-        mainNews.getArticles().add(convertToArticle(articleDTO, mainNews));
         return mainNews;
     }
 
