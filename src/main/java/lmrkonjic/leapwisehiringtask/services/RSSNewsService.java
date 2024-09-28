@@ -31,7 +31,7 @@ public class RSSNewsService {
     //TODO actual implementation
     public AnalysisResultDTO analyzeRSSNews(AnalysisRequestDTO requestDTO) {
         List<String> rssUrls = requestDTO.getRssUrls();
-        Map<String, List<ArticleDTO>> rssArticlesForURLs = rssDataService.fetchRSSArticlesForURLs(rssUrls);
+        List<ArticleDTO> rssArticlesForURLs = rssDataService.fetchRSSArticlesForURLs(rssUrls);
         List<MainNews> analyzedData = null;
         try {
             analyzedData = hotTopicService.getMainNewsWithArticles(rssArticlesForURLs);

@@ -20,8 +20,8 @@ public class RSSDataService {
     }
 
     //TODO actual implementation
-    public Map<String, List<ArticleDTO>> fetchRSSArticlesForURLs(List<String> urls){
-        Map<String, List<ArticleDTO>> articlesForNewsSites = new Hashtable<String, List<ArticleDTO>>();
+    public List<ArticleDTO> fetchRSSArticlesForURLs(List<String> urls){
+        List<ArticleDTO> articles = new ArrayList<>();
         for (String url : urls) {
             try {
                 String xmlContent = restTemplate.getForObject(url, String.class);
@@ -29,7 +29,6 @@ public class RSSDataService {
                 assert xmlContent != null;
                 SyndFeed feed = input.build(new XmlReader(new ByteArrayInputStream(xmlContent.getBytes())));
 
-                List<ArticleDTO> articles = new ArrayList<>();
                 for (SyndEntry entry : feed.getEntries()) {
                     ArticleDTO article = new ArticleDTO();
                     article.setArticleTitle(entry.getTitle());
@@ -37,12 +36,11 @@ public class RSSDataService {
                     article.setRssSiteURL(url);
                     articles.add(article);
                 }
-                articlesForNewsSites.put(url, articles);
             } catch (Exception e) {
                 System.err.println("Error processing URL: " + url + ". Error: " + e.getMessage());
             }
         }
+        return  articles;
 
-        return articlesForNewsSites;
     }
 }
