@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class RSSNewsService {
@@ -30,8 +31,13 @@ public class RSSNewsService {
     //TODO actual implementation
     public AnalysisResultDTO analyzeRSSNews(AnalysisRequestDTO requestDTO) {
         List<String> rssUrls = requestDTO.getRssUrls();
-        Dictionary<String, List<ArticleDTO>> rssArticlesForURLs = rssDataService.fetchRSSArticlesForURLs(rssUrls);
-        List<MainNews> analyzedData = hotTopicService.getMainNewsWithArticles(rssArticlesForURLs);
+        Map<String, List<ArticleDTO>> rssArticlesForURLs = rssDataService.fetchRSSArticlesForURLs(rssUrls);
+        List<MainNews> analyzedData = null;
+        try {
+            analyzedData = hotTopicService.getMainNewsWithArticles(rssArticlesForURLs);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         databaseService.saveSessionWithData(analyzedData);
 

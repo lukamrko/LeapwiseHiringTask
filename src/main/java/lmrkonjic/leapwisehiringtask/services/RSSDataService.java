@@ -9,10 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.Dictionary;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class RSSDataService {
@@ -23,8 +20,8 @@ public class RSSDataService {
     }
 
     //TODO actual implementation
-    public Dictionary<String, List<ArticleDTO>> fetchRSSArticlesForURLs(List<String> urls){
-        Dictionary<String, List<ArticleDTO>> articlesForNewsSites = new Hashtable<String, List<ArticleDTO>>();
+    public Map<String, List<ArticleDTO>> fetchRSSArticlesForURLs(List<String> urls){
+        Map<String, List<ArticleDTO>> articlesForNewsSites = new Hashtable<String, List<ArticleDTO>>();
         for (String url : urls) {
             try {
                 String xmlContent = restTemplate.getForObject(url, String.class);
@@ -42,7 +39,7 @@ public class RSSDataService {
                 }
                 articlesForNewsSites.put(url, articles);
             } catch (Exception e) {
-                System.err.println(STR."Error processing URL: \{url}. Error: \{e.getMessage()}");
+                System.err.println("Error processing URL: " + url + ". Error: " + e.getMessage());
             }
         }
 
