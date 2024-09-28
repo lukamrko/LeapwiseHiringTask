@@ -23,9 +23,19 @@ import java.util.stream.Collectors;
 
 @Service
 public class HotTopicService {
-    
+
+    private static class ScoredArticle {
+        final ArticleDTO article;
+        final float score;
+
+        ScoredArticle(ArticleDTO article, float score) {
+            this.article = article;
+            this.score = score;
+        }
+    }
+
     //TODO actual implementation
-    private static final float SIMILARITY_THRESHOLD = 2f;
+    private static final float SIMILARITY_THRESHOLD = 2.7f;
     private static long tempIdCounter = 1;
 
     public List<MainNews> getMainNewsWithArticles(List<ArticleDTO> rssArticles) throws IOException {
@@ -72,6 +82,8 @@ public class HotTopicService {
                 Query query = mlt.like("title", new StringReader(activeArticle.getArticleTitle()));
                 TopDocs topDocs = searcher.search(query, rssArticles.size());
 
+                List<ScoredArticle> similarArticles = new ArrayList<>();
+
                 for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
                     if (scoreDoc.score < SIMILARITY_THRESHOLD) {
                         continue;
@@ -79,8 +91,9 @@ public class HotTopicService {
 
                     Document doc = searcher.doc(scoreDoc.doc);
                     long docId = Long.parseLong(doc.get("id"));
+                    String rssSite = doc.get("rssSite");
 
-                    if (processedIds.contains(docId) || activeArticle.getRssSiteURL().equals(doc.get("rssSite"))) {
+                    if (processedIds.contains(docId) || activeArticle.getRssSiteURL().equals(rssSite)) {
                         continue;
                     }
 
@@ -90,9 +103,23 @@ public class HotTopicService {
                             .orElse(null);
 
                     if (similarArticle != null) {
-                        activeMainNews.getArticles().add(convertToArticle(similarArticle, activeMainNews));
-                        processedIds.add(docId);
+                        similarArticles.add(new ScoredArticle(similarArticle, scoreDoc.score));
                     }
+                }
+
+                // Select the best article from each RSS site
+                Map<String, ArticleDTO> bestArticlePerSite = similarArticles.stream()
+                        .collect(Collectors.groupingBy(
+                                sa -> sa.article.getRssSiteURL(),
+                                Collectors.collectingAndThen(
+                                        Collectors.maxBy(Comparator.comparingDouble(sa -> sa.score)),
+                                        optionalSa -> optionalSa.map(sa -> sa.article).orElse(null)
+                                )
+                        ));
+
+                for (ArticleDTO bestArticle : bestArticlePerSite.values()) {
+                    activeMainNews.getArticles().add(convertToArticle(bestArticle, activeMainNews));
+                    processedIds.add(bestArticle.getArticleID());
                 }
 
                 mainNewsList.add(activeMainNews);
