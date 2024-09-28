@@ -9,6 +9,7 @@ import lmrkonjic.leapwisehiringtask.dtos.MainNewsDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.List;
 
 @Service
@@ -29,8 +30,8 @@ public class RSSNewsService {
     //TODO actual implementation
     public AnalysisResultDTO analyzeRSSNews(AnalysisRequestDTO requestDTO) {
         List<String> rssUrls = requestDTO.getRssUrls();
-        var rssArticlesForURLs = rssDataService.fetchRSSArticlesForURLs(rssUrls);
-        var analyzedData = hotTopicService.getMainNewsWithArticles(rssArticlesForURLs);
+        Dictionary<String, List<ArticleDTO>> rssArticlesForURLs = rssDataService.fetchRSSArticlesForURLs(rssUrls);
+        List<MainNews> analyzedData = hotTopicService.getMainNewsWithArticles(rssArticlesForURLs);
 
         databaseService.saveSessionWithData(analyzedData);
 
