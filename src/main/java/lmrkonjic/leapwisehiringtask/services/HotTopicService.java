@@ -27,7 +27,7 @@ public class HotTopicService {
 	private static final String documentID = "id";
 	private static final String documentRssSite = "rssSite";
 	
-	private static final float SIMILARITY_THRESHOLD = 2.7f;
+	private static final float SIMILARITY_THRESHOLD = 0.94f;
 	private static long tempIdCounter = 1;
 	
 	private record ScoredArticle(ArticleDTO article, float score) {
