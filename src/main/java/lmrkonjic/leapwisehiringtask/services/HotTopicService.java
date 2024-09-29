@@ -39,6 +39,16 @@ public class HotTopicService {
 	@Value("${analyze.min-frequency-to-be-hot-news}")
 	private int minFrequencyToBeHotNews;
 	
+	public List<MainNews> getHotMainNews(List<MainNews> analyzedData) {
+		List<MainNews> hotMainNews = new ArrayList<>();
+		for (MainNews mainNews : analyzedData) {
+			if (mainNews.getArticles().size() >= minFrequencyToBeHotNews) {
+				hotMainNews.add(mainNews);
+			}
+		}
+		return hotMainNews;
+	}
+	
 	public List<MainNews> getMainNewsWithArticles(List<ArticleDTO> rssArticles) throws IOException {
 		assignTemporaryIDsToArticles(rssArticles);
 		
@@ -171,13 +181,5 @@ public class HotTopicService {
 		return article;
 	}
 	
-	public List<MainNews> getHotMainNews(List<MainNews> analyzedData) {
-		List<MainNews> hotMainNews = new ArrayList<>();
-		for (MainNews mainNews : analyzedData) {
-			if (mainNews.getArticles().size() >= minFrequencyToBeHotNews) {
-				hotMainNews.add(mainNews);
-			}
-		}
-		return hotMainNews;
-	}
+
 }
