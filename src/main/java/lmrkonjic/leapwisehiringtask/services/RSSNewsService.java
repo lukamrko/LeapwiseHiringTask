@@ -1,6 +1,5 @@
 package lmrkonjic.leapwisehiringtask.services;
 
-import lmrkonjic.leapwisehiringtask.data.entities.Article;
 import lmrkonjic.leapwisehiringtask.data.entities.MainNews;
 import lmrkonjic.leapwisehiringtask.dtos.AnalysisRequestDTO;
 import lmrkonjic.leapwisehiringtask.dtos.AnalysisResultDTO;
@@ -11,7 +10,6 @@ import lmrkonjic.leapwisehiringtask.exceptions.InvalidAPIParametersException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
