@@ -1,5 +1,14 @@
 news:
+  #how much news frequency/{id} will fetch
   top-count: 3
 
+
 analyze:
-  min-rss-sites:2
+  #amount of rss sites needed for analyse/new call
+  min-rss-sites: 2
+  #minimal similarity factor for lucene. lesser values will give more similarities
+  #but also more incorrect data, and vice versa
+  similarity-threshold: 1.9
+  #defines on how many sites news must appear if we want to consider them a hot news
+  min-frequency-to-be-hot-news: 2
+

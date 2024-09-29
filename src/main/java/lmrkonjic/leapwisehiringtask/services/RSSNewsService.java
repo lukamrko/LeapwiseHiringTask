@@ -18,23 +18,26 @@ import java.util.List;
 public class RSSNewsService {
 	@Value("${analyze.min-rss-sites}")
 	private int minRssSites;
-	
+
 	private final DatabaseService databaseService;
 	private final HotTopicService hotTopicService;
 	private final RSSDataService rssDataService;
+	private final DTOTransformationService dtoTransformationService;
 	
 	public RSSNewsService(
 		DatabaseService databaseService,
 		HotTopicService hotTopicService,
-		RSSDataService rssDataService) {
+		RSSDataService rssDataService,
+		DTOTransformationService dtoTransformationService) {
 		this.databaseService = databaseService;
 		this.hotTopicService = hotTopicService;
 		this.rssDataService = rssDataService;
+		this.dtoTransformationService = dtoTransformationService;
 	}
 	
 	public AnalysisResultDTO analyzeRSSNews(AnalysisRequestDTO requestDTO) {
 		List<String> rssUrls = requestDTO.getRssUrls();
-		if (rssUrls == null || rssUrls.size() > minRssSites) {
+		if (rssUrls == null || rssUrls.size() < minRssSites) {
 			throw new InvalidAPIParametersException("The number of parameters you entered is invalid!");
 		}
 		
@@ -49,57 +52,11 @@ public class RSSNewsService {
 		databaseService.saveSessionWithData(analyzedData);
 		
 		List<MainNews> hotMainNews = hotTopicService.getHotMainNews(analyzedData);
-		return transformHotMainNewsToAnalysisResultDTO(hotMainNews);
+		return dtoTransformationService.transformHotMainNewsToAnalysisResultDTO(hotMainNews);
 	}
 	
 	public List<MainNewsDTO> fetchMostTrendingNewsForSessionID(Long sessionID) {
 		List<MainNews> mostTrendingNews = databaseService.fetchMostTrendingNewsWithArticlesForSessionID(sessionID);
-		return transformMainNewsToMainNewsDTO(mostTrendingNews);
+		return dtoTransformationService.transformMainNewsToMainNewsDTO(mostTrendingNews);
 	}
-	
-	//TODO prebaciti ovo ili u dto ili u servise
-	private AnalysisResultDTO transformHotMainNewsToAnalysisResultDTO(List<MainNews> hotMainNews) {
-		var analysisResultDTO = new AnalysisResultDTO();
-		var sessionID = hotMainNews.getFirst().getSession().getSessionID();
-		
-		var mainNewsDTO = transformMainNewsToMainNewsDTO(hotMainNews);
-		
-		analysisResultDTO.setSessionID(sessionID);
-		analysisResultDTO.setHotTopics(mainNewsDTO);
-		
-		return analysisResultDTO;
-	}
-	
-	private List<MainNewsDTO> transformMainNewsToMainNewsDTO(List<MainNews> mostTrendingNews) {
-		List<MainNewsDTO> mainNewsDTOs = new ArrayList<>();
-		for (var mainNews : mostTrendingNews) {
-			var mainNewsDTO = new MainNewsDTO();
-			mainNewsDTO.setMainNewsID(mainNews.getMainNewsID());
-			mainNewsDTO.setMainNewsTitle(mainNews.getMainNewsTitle());
-			
-			List<ArticleDTO> articleDTOs = transformArticlesToArticleDTOs(mainNews.getArticles());
-			mainNewsDTO.setArticles(articleDTOs);
-			
-			mainNewsDTOs.add(mainNewsDTO);
-		}
-		
-		return mainNewsDTOs;
-	}
-	
-	private List<ArticleDTO> transformArticlesToArticleDTOs(List<Article> articles) {
-		List<ArticleDTO> articleDTOs = new ArrayList<>();
-		for (var article : articles) {
-			var articleDTO = new ArticleDTO();
-			articleDTO.setArticleID(article.getArticleID());
-			articleDTO.setArticleTitle(article.getArticleTitle());
-			articleDTO.setArticleURL(article.getArticleURL());
-			articleDTO.setRssSiteURL(article.getRssSiteURL());
-			
-			articleDTOs.add(articleDTO);
-		}
-		
-		return articleDTOs;
-	}
-	
-	
 }

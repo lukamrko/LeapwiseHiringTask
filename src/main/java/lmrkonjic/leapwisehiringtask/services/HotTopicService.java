@@ -17,6 +17,7 @@ import org.apache.lucene.queries.mlt.MoreLikeThis;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.Directory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -32,11 +33,12 @@ public class HotTopicService {
 	private static final String documentID = "id";
 	private static final String documentRssSite = "rssSite";
 	
-	private static final float SIMILARITY_THRESHOLD = 1.9f;
-	private static final int MIN_FREQUENCY_TO_BE_HOT_NEWS = 2;
+	@Value("${analyze.similarity-threshold}")
+	private float similarityThreshold;
 	
+	@Value("${analyze.min-frequency-to-be-hot-news}")
+	private int minFrequencyToBeHotNews;
 	
-	//TODO cijela metoda kroz try catch. ako je greška vratiti praznu listu
 	public List<MainNews> getMainNewsWithArticles(List<ArticleDTO> rssArticles) throws IOException {
 		assignTemporaryIDsToArticles(rssArticles);
 		
@@ -70,7 +72,7 @@ public class HotTopicService {
 				
 				List<ScoredArticle> similarArticles = new ArrayList<>();
 				for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
-					if (scoreDoc.score < SIMILARITY_THRESHOLD) {
+					if (scoreDoc.score < similarityThreshold) {
 						continue;
 					}
 					
@@ -103,9 +105,9 @@ public class HotTopicService {
 						ScoredArticle::article
 					));
 				
-				for (ArticleDTO bestArticle : bestArticlePerSite.values()) {
-					activeMainNews.getArticles().add(convertToArticle(bestArticle, activeMainNews));
-					processedIds.add(bestArticle.getArticleID());
+				for (ArticleDTO bestArticleDTO : bestArticlePerSite.values()) {
+					activeMainNews.getArticles().add(convertArticleDTOToArticle(bestArticleDTO, activeMainNews));
+					processedIds.add(bestArticleDTO.getArticleID());
 				}
 				
 				mainNewsList.add(activeMainNews);
@@ -153,11 +155,14 @@ public class HotTopicService {
 	private MainNews createMainNewsFromArticle(ArticleDTO articleDTO) {
 		MainNews mainNews = new MainNews();
 		mainNews.setMainNewsTitle(articleDTO.getArticleTitle());
-		mainNews.setArticles(new ArrayList<>(Collections.singletonList(convertToArticle(articleDTO, mainNews))));
+		Article article = convertArticleDTOToArticle(articleDTO, mainNews);
+		ArrayList<Article> articles = new ArrayList<>(Collections.singletonList(article));
+		mainNews.setArticles(articles);
 		return mainNews;
 	}
 	
-	private Article convertToArticle(ArticleDTO articleDTO, MainNews mainNews) {
+	private Article convertArticleDTOToArticle(ArticleDTO articleDTO, MainNews mainNews) {
+		//ID isn't set because at the moment it is fake
 		Article article = new Article();
 		article.setArticleTitle(articleDTO.getArticleTitle());
 		article.setArticleURL(articleDTO.getArticleURL());
@@ -169,7 +174,7 @@ public class HotTopicService {
 	public List<MainNews> getHotMainNews(List<MainNews> analyzedData) {
 		List<MainNews> hotMainNews = new ArrayList<>();
 		for (MainNews mainNews : analyzedData) {
-			if (mainNews.getArticles().size() >= MIN_FREQUENCY_TO_BE_HOT_NEWS) {
+			if (mainNews.getArticles().size() >= minFrequencyToBeHotNews) {
 				hotMainNews.add(mainNews);
 			}
 		}
