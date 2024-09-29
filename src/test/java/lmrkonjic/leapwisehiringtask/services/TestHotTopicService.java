@@ -22,7 +22,7 @@ public class TestHotTopicService {
 		
 		List<ArticleDTO> rssArticles = createMockArticles();
 		
-		List<MainNews> mainNews= new ArrayList<MainNews>();
+		List<MainNews> mainNews= new ArrayList<>();
 		
 		try {
 			mainNews = hotTopicService.getMainNewsWithArticles(rssArticles);
