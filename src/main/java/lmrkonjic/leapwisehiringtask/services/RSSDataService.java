@@ -19,7 +19,6 @@ public class RSSDataService {
         this.restTemplate = restTemplate;
     }
 
-    //TODO actual implementation
     public List<ArticleDTO> fetchRSSArticlesForURLs(List<String> urls){
         List<ArticleDTO> articles = new ArrayList<>();
         for (String url : urls) {

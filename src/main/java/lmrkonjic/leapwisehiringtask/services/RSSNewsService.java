@@ -28,7 +28,6 @@ public class RSSNewsService {
         this.rssDataService = rssDataService;
     }
 
-    //TODO actual implementation
     public AnalysisResultDTO analyzeRSSNews(AnalysisRequestDTO requestDTO) {
         List<String> rssUrls = requestDTO.getRssUrls();
         List<ArticleDTO> rssArticlesForURLs = rssDataService.fetchRSSArticlesForURLs(rssUrls);

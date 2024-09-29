@@ -15,6 +15,8 @@ public class Article {
     private MainNews mainNews;
 
     private String articleTitle;
+    
+    @Column(length = 1000)
     private String articleURL;
     private String rssSiteURL;
 

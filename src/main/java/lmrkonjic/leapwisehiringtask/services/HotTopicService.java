@@ -3,7 +3,11 @@ package lmrkonjic.leapwisehiringtask.services;
 import lmrkonjic.leapwisehiringtask.data.entities.Article;
 import lmrkonjic.leapwisehiringtask.data.entities.MainNews;
 import lmrkonjic.leapwisehiringtask.dtos.ArticleDTO;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.*;
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
+import org.apache.lucene.analysis.en.PorterStemFilter;
+import org.apache.lucene.analysis.standard.StandardTokenizer;
+import org.apache.lucene.analysis.synonym.SynonymFilter;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
@@ -27,7 +31,8 @@ public class HotTopicService {
 	private static final String documentID = "id";
 	private static final String documentRssSite = "rssSite";
 	
-	private static final float SIMILARITY_THRESHOLD = 0.94f;
+//	private static final float SIMILARITY_THRESHOLD = 0.94f;
+	private static final float SIMILARITY_THRESHOLD = 1.9f;
 	private static long tempIdCounter = 1;
 	
 	private record ScoredArticle(ArticleDTO article, float score) {
@@ -41,8 +46,16 @@ public class HotTopicService {
 		
 		// Create in-memory Lucene index
 		Directory indexDirectory = new ByteBuffersDirectory();
-		StandardAnalyzer analyzer = new StandardAnalyzer();
-		
+		Analyzer analyzer = new Analyzer() {
+			@Override
+			protected TokenStreamComponents createComponents(String fieldName) {
+				Tokenizer source = new StandardTokenizer();
+				TokenStream filter = new LowerCaseFilter(source);
+				filter = new StopFilter(filter, EnglishAnalyzer.ENGLISH_STOP_WORDS_SET);  // Remove English stopwords
+				filter = new PorterStemFilter(filter);  // Apply stemming
+				return new TokenStreamComponents(source, filter);
+			}
+		};
 		// Index the articles
 		try (IndexWriter writer = new IndexWriter(indexDirectory, new IndexWriterConfig(analyzer))) {
 			for (ArticleDTO rssArticle : rssArticles) {
