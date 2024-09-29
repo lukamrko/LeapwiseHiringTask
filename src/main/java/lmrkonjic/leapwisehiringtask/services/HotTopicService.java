@@ -80,7 +80,7 @@ public class HotTopicService {
 						continue;
 					}
 					
-					Document doc = searcher.doc(scoreDoc.doc);
+					Document doc = searcher.storedFields().document(scoreDoc.doc);
 					long docId = Long.parseLong(doc.get("id"));
 					String rssSite = doc.get("rssSite");
 					
@@ -94,7 +94,6 @@ public class HotTopicService {
 						.findFirst()
 						.ifPresent(similarArticle -> similarArticles
 							.add(new ScoredArticle(similarArticle, scoreDoc.score)));
-					
 				}
 				
 				// Select the best article from each RSS site
