@@ -3,11 +3,11 @@ package lmrkonjic.leapwisehiringtask.services;
 import lmrkonjic.leapwisehiringtask.data.entities.Article;
 import lmrkonjic.leapwisehiringtask.data.entities.MainNews;
 import lmrkonjic.leapwisehiringtask.dtos.ArticleDTO;
+import lmrkonjic.leapwisehiringtask.records.ScoredArticle;
 import org.apache.lucene.analysis.*;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.en.PorterStemFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
-import org.apache.lucene.analysis.synonym.SynonymFilter;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
@@ -32,44 +32,18 @@ public class HotTopicService {
 	private static final String documentID = "id";
 	private static final String documentRssSite = "rssSite";
 	
-//	private static final float SIMILARITY_THRESHOLD = 0.94f;
 	private static final float SIMILARITY_THRESHOLD = 1.9f;
-	private static final int MIN_FREQUENCE_TO_BE_HOT_NEWS = 2;
+	private static final int MIN_FREQUENCY_TO_BE_HOT_NEWS = 2;
 	
-	//TODO move to records
-	private record ScoredArticle(ArticleDTO article, float score) {
-	}
 	
 	//TODO cijela metoda kroz try catch. ako je greška vratiti praznu listu
 	public List<MainNews> getMainNewsWithArticles(List<ArticleDTO> rssArticles) throws IOException {
-		// Assign temporary IDs
-		long tempIdCounter = 1;
-		for (ArticleDTO rssArticle : rssArticles) {
-			rssArticle.setArticleID(tempIdCounter++);
-		}
+		assignTemporaryIDsToArticles(rssArticles);
 		
 		// Create in-memory Lucene index
 		Directory indexDirectory = new ByteBuffersDirectory();
-		Analyzer analyzer = new Analyzer() {
-			@Override
-			protected TokenStreamComponents createComponents(String fieldName) {
-				Tokenizer source = new StandardTokenizer();
-				TokenStream filter = new LowerCaseFilter(source);
-				filter = new StopFilter(filter, EnglishAnalyzer.ENGLISH_STOP_WORDS_SET);  // Remove English stopwords
-				filter = new PorterStemFilter(filter);  // Apply stemming
-				return new TokenStreamComponents(source, filter);
-			}
-		};
-		// Index the articles
-		try (IndexWriter writer = new IndexWriter(indexDirectory, new IndexWriterConfig(analyzer))) {
-			for (ArticleDTO rssArticle : rssArticles) {
-				Document doc = new Document();
-				doc.add(new TextField(documentTitle, rssArticle.getArticleTitle(), Field.Store.YES));
-				doc.add(new StringField(documentID, rssArticle.getArticleID().toString(), Field.Store.YES));
-				doc.add(new StringField(documentRssSite, rssArticle.getRssSiteURL(), Field.Store.YES));
-				writer.addDocument(doc);
-			}
-		}
+		Analyzer analyzer = getAnalyzerForMainNews();
+		indexTheArticles(rssArticles, indexDirectory, analyzer);
 		
 		List<MainNews> mainNewsList = new ArrayList<>();
 		Set<Long> processedIds = new HashSet<>();
@@ -95,7 +69,6 @@ public class HotTopicService {
 				TopDocs topDocs = searcher.search(query, rssArticles.size());
 				
 				List<ScoredArticle> similarArticles = new ArrayList<>();
-				
 				for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
 					if (scoreDoc.score < SIMILARITY_THRESHOLD) {
 						continue;
@@ -120,14 +93,14 @@ public class HotTopicService {
 				// Select the best article from each RSS site
 				Map<String, ArticleDTO> bestArticlePerSite = similarArticles.stream()
 					.collect(Collectors.toMap(
-						sa -> sa.article.getRssSiteURL(),
+						sa -> sa.article().getRssSiteURL(),
 						sa -> sa,
-						BinaryOperator.maxBy(Comparator.comparingDouble(sa -> sa.score))
+						BinaryOperator.maxBy(Comparator.comparingDouble(ScoredArticle::score))
 					))
 					.values().stream()
 					.collect(Collectors.toMap(
-						sa -> sa.article.getRssSiteURL(),
-						sa -> sa.article
+						sa -> sa.article().getRssSiteURL(),
+						ScoredArticle::article
 					));
 				
 				for (ArticleDTO bestArticle : bestArticlePerSite.values()) {
@@ -140,6 +113,41 @@ public class HotTopicService {
 		}
 		
 		return mainNewsList;
+	}
+	
+	private void assignTemporaryIDsToArticles(List<ArticleDTO> rssArticles) {
+		long tempIdCounter = 1;
+		for (ArticleDTO rssArticle : rssArticles) {
+			rssArticle.setArticleID(tempIdCounter++);
+		}
+	}
+	
+	private void indexTheArticles(List<ArticleDTO> rssArticles, Directory indexDirectory, Analyzer analyzer) throws IOException {
+		try (IndexWriter writer = new IndexWriter(indexDirectory, new IndexWriterConfig(analyzer))) {
+			for (ArticleDTO rssArticle : rssArticles) {
+				Document doc = new Document();
+				doc.add(new TextField(documentTitle, rssArticle.getArticleTitle(), Field.Store.YES));
+				doc.add(new StringField(documentID, rssArticle.getArticleID().toString(), Field.Store.YES));
+				doc.add(new StringField(documentRssSite, rssArticle.getRssSiteURL(), Field.Store.YES));
+				writer.addDocument(doc);
+			}
+		}
+	}
+	
+	/**
+	 * @return Analyzer with removed English stopwords and applied stemming
+	 */
+	private Analyzer getAnalyzerForMainNews() {
+		return new Analyzer() {
+			@Override
+			protected TokenStreamComponents createComponents(String fieldName) {
+				Tokenizer source = new StandardTokenizer();
+				TokenStream filter = new LowerCaseFilter(source);
+				filter = new StopFilter(filter, EnglishAnalyzer.ENGLISH_STOP_WORDS_SET);
+				filter = new PorterStemFilter(filter);
+				return new TokenStreamComponents(source, filter);
+			}
+		};
 	}
 	
 	private MainNews createMainNewsFromArticle(ArticleDTO articleDTO) {
@@ -158,11 +166,10 @@ public class HotTopicService {
 		return article;
 	}
 	
-	//TODO maybe add option for overlap on all news sites
 	public List<MainNews> getHotMainNews(List<MainNews> analyzedData) {
 		List<MainNews> hotMainNews = new ArrayList<>();
 		for (MainNews mainNews : analyzedData) {
-			if (mainNews.getArticles().size() >= MIN_FREQUENCE_TO_BE_HOT_NEWS) {
+			if (mainNews.getArticles().size() >= MIN_FREQUENCY_TO_BE_HOT_NEWS) {
 				hotMainNews.add(mainNews);
 			}
 		}
