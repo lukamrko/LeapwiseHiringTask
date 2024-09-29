@@ -1,2 +1,5 @@
 news:
   top-count: 3
+
+analyze:
+  min-rss-sites:2
