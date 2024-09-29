@@ -20,7 +20,6 @@ public class Article {
     @Column(length = 1023)
     private String articleURL;
     
-    @Column(name = "rssSiteURL")
     private String rssSiteURL;
 
     public Article() { }
