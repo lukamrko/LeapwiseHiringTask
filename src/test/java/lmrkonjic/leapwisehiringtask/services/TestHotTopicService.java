@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 public class TestHotTopicService {
 	@Test
-	public void GivenMultipleArticles_WhenTwoArticlesFromDifferentSitesAreConnected_ThenShowThatInMainNews()
+	public void testGetMainNewsWithArticles_ShouldGroupRelatedArticlesFromDifferentSites()
 	{
 		HotTopicService hotTopicService = new HotTopicService();
 		
