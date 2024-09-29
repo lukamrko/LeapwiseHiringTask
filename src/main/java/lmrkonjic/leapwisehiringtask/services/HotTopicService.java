@@ -10,7 +10,6 @@ import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.*;
 import org.apache.lucene.queries.mlt.MoreLikeThis;
-import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.Directory;
@@ -24,17 +23,9 @@ import java.util.stream.Collectors;
 @Service
 public class HotTopicService {
 
-    private static class ScoredArticle {
-        final ArticleDTO article;
-        final float score;
-
-        ScoredArticle(ArticleDTO article, float score) {
-            this.article = article;
-            this.score = score;
-        }
+    private record ScoredArticle(ArticleDTO article, float score) {
     }
 
-    //TODO actual implementation
     private static final float SIMILARITY_THRESHOLD = 2.7f;
     private static long tempIdCounter = 1;
 
@@ -97,14 +88,11 @@ public class HotTopicService {
                         continue;
                     }
 
-                    ArticleDTO similarArticle = rssArticles.stream()
+                    rssArticles.stream()
                             .filter(a -> a.getArticleID() == docId)
                             .findFirst()
-                            .orElse(null);
+                            .ifPresent(similarArticle -> similarArticles.add(new ScoredArticle(similarArticle, scoreDoc.score)));
 
-                    if (similarArticle != null) {
-                        similarArticles.add(new ScoredArticle(similarArticle, scoreDoc.score));
-                    }
                 }
 
                 // Select the best article from each RSS site
