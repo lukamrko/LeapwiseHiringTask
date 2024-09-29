@@ -4,6 +4,7 @@ import lmrkonjic.leapwisehiringtask.data.entities.Article;
 import lmrkonjic.leapwisehiringtask.data.entities.MainNews;
 import lmrkonjic.leapwisehiringtask.dtos.ArticleDTO;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
@@ -15,11 +16,42 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class TestHotTopicService {
+	
+	@Autowired
+	private HotTopicService hotTopicService;
+	
+	@Test
+	public void testGetHotMainNews_ShouldReturnHotNews() {
+		// Create mock data for testing
+		List<MainNews> analyzedData = new ArrayList<>();
+		
+		// Create MainNews objects
+		MainNews news1 = new MainNews();
+		news1.setArticles(List.of(new Article(), new Article(), new Article())); // 3 articles
+		
+		MainNews news2 = new MainNews();
+		news2.setArticles(List.of(new Article(), new Article())); // 2 articles
+		
+		MainNews news3 = new MainNews();
+		news3.setArticles(List.of(new Article())); // 1 article
+		
+		analyzedData.add(news1);
+		analyzedData.add(news2);
+		analyzedData.add(news3);
+		
+		// Call the method to test
+		List<MainNews> hotMainNews = hotTopicService.getHotMainNews(analyzedData);
+		
+		// Assert that hotMainNews contains only the expected results
+		assertEquals(2, hotMainNews.size(), "There should be 2 hot MainNews objects");
+		assertTrue(hotMainNews.contains(news1), "Hot MainNews should include news1 with 3 articles");
+		assertTrue(hotMainNews.contains(news2), "Hot MainNews should include news2 with 2 articles");
+		assertFalse(hotMainNews.contains(news3), "Hot MainNews should not include news3 with 1 article");
+	}
+	
 	@Test
 	public void testGetMainNewsWithArticles_ShouldGroupRelatedArticlesFromDifferentSites()
 	{
-		HotTopicService hotTopicService = new HotTopicService();
-		
 		List<ArticleDTO> rssArticles = createMockArticles();
 		
 		List<MainNews> mainNews= new ArrayList<>();
