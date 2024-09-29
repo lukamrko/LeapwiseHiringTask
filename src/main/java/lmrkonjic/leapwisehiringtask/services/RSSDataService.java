@@ -5,6 +5,7 @@ import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 import lmrkonjic.leapwisehiringtask.dtos.ArticleDTO;
+import lmrkonjic.leapwisehiringtask.exceptions.RssContentFetchException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -25,7 +26,9 @@ public class RSSDataService {
             try {
                 String xmlContent = restTemplate.getForObject(url, String.class);
                 SyndFeedInput input = new SyndFeedInput();
-                assert xmlContent != null;
+                if (xmlContent == null) {
+                    throw new RssContentFetchException("Fetched content of url is null: " + url);
+                }
                 SyndFeed feed = input.build(new XmlReader(new ByteArrayInputStream(xmlContent.getBytes())));
 
                 for (SyndEntry entry : feed.getEntries()) {
@@ -36,7 +39,7 @@ public class RSSDataService {
                     articles.add(article);
                 }
             } catch (Exception e) {
-                System.err.println("Error processing URL: " + url + ". Error: " + e.getMessage());
+                throw new RssContentFetchException("Error processing URL: " + url + ". Error: " + e.getMessage());
             }
         }
         return  articles;
