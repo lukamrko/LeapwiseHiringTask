@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.*;
+import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,13 +34,16 @@ public class HotTopicService {
 	
 //	private static final float SIMILARITY_THRESHOLD = 0.94f;
 	private static final float SIMILARITY_THRESHOLD = 1.9f;
-	private static long tempIdCounter = 1;
+	private static final int MIN_FREQUENCE_TO_BE_HOT_NEWS = 2;
 	
+	//TODO move to records
 	private record ScoredArticle(ArticleDTO article, float score) {
 	}
 	
+	//TODO cijela metoda kroz try catch. ako je greška vratiti praznu listu
 	public List<MainNews> getMainNewsWithArticles(List<ArticleDTO> rssArticles) throws IOException {
 		// Assign temporary IDs
+		long tempIdCounter = 1;
 		for (ArticleDTO rssArticle : rssArticles) {
 			rssArticle.setArticleID(tempIdCounter++);
 		}
@@ -115,12 +119,15 @@ public class HotTopicService {
 				
 				// Select the best article from each RSS site
 				Map<String, ArticleDTO> bestArticlePerSite = similarArticles.stream()
-					.collect(Collectors.groupingBy(
+					.collect(Collectors.toMap(
 						sa -> sa.article.getRssSiteURL(),
-						Collectors.collectingAndThen(
-							Collectors.maxBy(Comparator.comparingDouble(sa -> sa.score)),
-							optionalSa -> optionalSa.map(sa -> sa.article).orElse(null)
-						)
+						sa -> sa,
+						BinaryOperator.maxBy(Comparator.comparingDouble(sa -> sa.score))
+					))
+					.values().stream()
+					.collect(Collectors.toMap(
+						sa -> sa.article.getRssSiteURL(),
+						sa -> sa.article
 					));
 				
 				for (ArticleDTO bestArticle : bestArticlePerSite.values()) {
@@ -155,7 +162,7 @@ public class HotTopicService {
 	public List<MainNews> getHotMainNews(List<MainNews> analyzedData) {
 		List<MainNews> hotMainNews = new ArrayList<>();
 		for (MainNews mainNews : analyzedData) {
-			if (mainNews.getArticles().size() >= 2) {
+			if (mainNews.getArticles().size() >= MIN_FREQUENCE_TO_BE_HOT_NEWS) {
 				hotMainNews.add(mainNews);
 			}
 		}

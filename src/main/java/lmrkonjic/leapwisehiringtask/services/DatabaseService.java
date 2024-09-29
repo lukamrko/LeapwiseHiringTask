@@ -34,6 +34,7 @@ public class DatabaseService {
         this.articleRepository = articleRepository;
     }
 
+    //todo VIDI šta djeca trebaju znati roditelje
     @Transactional
     public void saveSessionWithData(List<MainNews> analyzedData) {
         Session session = new Session();

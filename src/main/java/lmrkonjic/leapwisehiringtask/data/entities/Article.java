@@ -16,8 +16,11 @@ public class Article {
 
     private String articleTitle;
     
-    @Column(length = 1000)
+    //Some URL-s are simply to big for standard varchar size
+    @Column(length = 1023)
     private String articleURL;
+    
+    @Column(name = "rssSiteURL")
     private String rssSiteURL;
 
     public Article() { }

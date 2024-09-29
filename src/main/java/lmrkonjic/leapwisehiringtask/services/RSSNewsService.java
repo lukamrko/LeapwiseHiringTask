@@ -30,11 +30,12 @@ public class RSSNewsService {
 
     public AnalysisResultDTO analyzeRSSNews(AnalysisRequestDTO requestDTO) {
         List<String> rssUrls = requestDTO.getRssUrls();
+        //TODO napraviti check da su bar 2 URL-a
         List<ArticleDTO> rssArticlesForURLs = rssDataService.fetchRSSArticlesForURLs(rssUrls);
-        List<MainNews> analyzedData = null;
+        List<MainNews> analyzedData;
         try {
             analyzedData = hotTopicService.getMainNewsWithArticles(rssArticlesForURLs);
-        } catch (Exception e) {
+        } catch (Exception e) { //TODO Izbaciti generički excpetion
             throw new RuntimeException(e);
         }
 
@@ -49,6 +50,7 @@ public class RSSNewsService {
         return transformMainNewsToMainNewsDTO(mostTrendingNews);
     }
 
+    //TODO prebaciti ovo ili u dto ili u servise
     private AnalysisResultDTO transformHotMainNewsToAnalysisResultDTO(List<MainNews> hotMainNews) {
         var analysisResultDTO = new AnalysisResultDTO();
         var sessionID = hotMainNews.getFirst().getSession().getSessionID();
