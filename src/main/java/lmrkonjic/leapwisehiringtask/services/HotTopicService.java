@@ -23,11 +23,15 @@ import java.util.stream.Collectors;
 @Service
 public class HotTopicService {
 	
-	private record ScoredArticle(ArticleDTO article, float score) {
-	}
+	private static final String documentTitle = "title";
+	private static final String documentID = "id";
+	private static final String documentRssSite = "rssSite";
 	
 	private static final float SIMILARITY_THRESHOLD = 2.7f;
 	private static long tempIdCounter = 1;
+	
+	private record ScoredArticle(ArticleDTO article, float score) {
+	}
 	
 	public List<MainNews> getMainNewsWithArticles(List<ArticleDTO> rssArticles) throws IOException {
 		// Assign temporary IDs
@@ -43,9 +47,9 @@ public class HotTopicService {
 		try (IndexWriter writer = new IndexWriter(indexDirectory, new IndexWriterConfig(analyzer))) {
 			for (ArticleDTO rssArticle : rssArticles) {
 				Document doc = new Document();
-				doc.add(new TextField("title", rssArticle.getArticleTitle(), Field.Store.YES));
-				doc.add(new StringField("id", rssArticle.getArticleID().toString(), Field.Store.YES));
-				doc.add(new StringField("rssSite", rssArticle.getRssSiteURL(), Field.Store.YES));
+				doc.add(new TextField(documentTitle, rssArticle.getArticleTitle(), Field.Store.YES));
+				doc.add(new StringField(documentID, rssArticle.getArticleID().toString(), Field.Store.YES));
+				doc.add(new StringField(documentRssSite, rssArticle.getRssSiteURL(), Field.Store.YES));
 				writer.addDocument(doc);
 			}
 		}
@@ -57,7 +61,7 @@ public class HotTopicService {
 			IndexSearcher searcher = new IndexSearcher(reader);
 			MoreLikeThis mlt = new MoreLikeThis(reader);
 			mlt.setAnalyzer(analyzer);
-			mlt.setFieldNames(new String[]{"title"});
+			mlt.setFieldNames(new String[]{documentTitle});
 			mlt.setMinTermFreq(1);
 			mlt.setMinDocFreq(1);
 			
@@ -70,7 +74,7 @@ public class HotTopicService {
 				processedIds.add(activeArticle.getArticleID());
 				
 				// Find similar articles
-				Query query = mlt.like("title", new StringReader(activeArticle.getArticleTitle()));
+				Query query = mlt.like(documentTitle, new StringReader(activeArticle.getArticleTitle()));
 				TopDocs topDocs = searcher.search(query, rssArticles.size());
 				
 				List<ScoredArticle> similarArticles = new ArrayList<>();
@@ -81,8 +85,8 @@ public class HotTopicService {
 					}
 					
 					Document doc = searcher.storedFields().document(scoreDoc.doc);
-					long docId = Long.parseLong(doc.get("id"));
-					String rssSite = doc.get("rssSite");
+					long docId = Long.parseLong(doc.get(documentID));
+					String rssSite = doc.get(documentRssSite);
 					
 					if (processedIds.contains(docId)
 						|| activeArticle.getRssSiteURL().equals(rssSite)) {
