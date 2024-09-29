@@ -31,7 +31,7 @@ public class TestRSSDataService {
 	}
 	
 	@Test
-	public void fetchRSSArticlesForURLs_ShouldReturnArticlesForValidURLs() throws Exception {
+	public void fetchRSSArticlesForURLs_ShouldReturnArticlesForValidURLs() {
 		// Arrange
 		String validUrl = "https://example.com/rss";
 		String xmlContent = "<rss><channel><item><title>Article 1</title><link>https://example.com/article1</link></item></channel></rss>";
@@ -52,9 +52,9 @@ public class TestRSSDataService {
 		
 		// Assert
 		assertEquals(1, result.size());
-		assertEquals("Article 1", result.get(0).getArticleTitle());
-		assertEquals("https://example.com/article1", result.get(0).getArticleURL());
-		assertEquals(validUrl, result.get(0).getRssSiteURL());
+		assertEquals("Article 1", result.getFirst().getArticleTitle());
+		assertEquals("https://example.com/article1", result.getFirst().getArticleURL());
+		assertEquals(validUrl, result.getFirst().getRssSiteURL());
 		
 		verify(restTemplate, times(1)).getForObject(validUrl, String.class);
 	}
@@ -90,7 +90,7 @@ public class TestRSSDataService {
 	}
 	
 	@Test
-	public void fetchRSSArticlesForURLs_ShouldReturnEmptyListWhenNoArticlesPresent() throws Exception {
+	public void fetchRSSArticlesForURLs_ShouldReturnEmptyListWhenNoArticlesPresent() {
 		// Arrange
 		String validUrl = "https://example.com/rss";
 		String xmlContent = "<rss><channel></channel></rss>"; // No items

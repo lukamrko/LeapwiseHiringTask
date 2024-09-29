@@ -9,7 +9,6 @@ import lmrkonjic.leapwisehiringtask.data.entities.Session;
 import lmrkonjic.leapwisehiringtask.dtos.AnalysisResultDTO;
 import lmrkonjic.leapwisehiringtask.dtos.ArticleDTO;
 import lmrkonjic.leapwisehiringtask.dtos.MainNewsDTO;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
